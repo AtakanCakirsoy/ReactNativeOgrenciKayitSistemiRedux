@@ -7,33 +7,14 @@ import '@firebase/auth';
 import { connect } from 'react-redux'; //import ettiğimiz actionsları kullanabilmemiz için gerekli
 import { TextInput, Alert } from 'react-native';
 import { Button, Card, CardSection, Spinner } from '../components'; //components klasörü altındaki index.js sayesinde bu tarzda çağırabildik.
-import { emailChanged, passwordChanged } from '../actions/kimlikdogrulamaactions'; //import ediyoruz ancak kullanabilmek için connect yapısı gerekli
+import { emailChanged, passwordChanged, LoginUser } from '../actions/kimlikdogrulamaactions'; //import ediyoruz ancak kullanabilmek için connect yapısı gerekli
 class LoginForm extends Component {
     state = { email: '', password: '', loading: false };
     clickLogin() {
-        this.setState({ loading: true });
-        const { email, password } = this.state; //this.state'nin içindeki email ve passworda ulaşmak için
-
-        if (email === '' || password === '') { //boş ise hata verdirtiyoruz.
-            this.setState({ loading: false })
-            Alert.alert(
-                'Mesaj',
-                'Boş Alan Bırakılamaz!',
-                [
-                    { text: 'Tamam', onPress: () => null }
-                ]
-            );
-        }
-        else {
-            firebase.auth().signInWithEmailAndPassword(email, password)
-                .then(this.loginSuccess.bind(this)) //then'den sonrası giriş başarılı demek gibi birşey.
-                .catch(() => {
-                    firebase.auth().createUserWithEmailAndPassword(email, password) //eğer giriş yapan kullanıcı kayıtlı değil ise kaydetmesi için.
-                        .then(this.loginSuccess.bind(this))
-                        .catch(this.loginFail.bind(this));//eğer bu kullanıcı zaten var ise hataya düşürmek için
-                });
-        }
-
+        const { email, password } = this.props; //bu propslar mapStateToProps'den geliyor
+        this.props.LoginUser({ email, password });
+        /*this.setState({ loading: true });
+        const { email, password } = this.state; this.state'nin içindeki email ve passworda ulaşmak için*/
     }
     loginSuccess() {
         console.log('başarılı');
@@ -49,13 +30,13 @@ class LoginForm extends Component {
                 { text: 'Tamam', onPress: () => null }
             ]
         );
-
     }
     //renderButton yapmamızın sebebi eğer loading oluyorsa loading simgesi çıkması için
     renderButton() {
-        if (!this.state.loading) {
+        //this.state.loading idi, this.props.loading yaptık redux yapısı için
+        if (!this.props.loading) {
             return <Button onPress={this.clickLogin.bind(this)}>Giriş</Button>
-            // state'nin içindeki email ve password'a ulaşabilmek için bind(this) dememiz gerekiyor. */
+            // state'nin içindeki email ve password'a ulaşabilmek için bind(this) dememiz gerekiyor.
         }
         return <Spinner size="small" />
     }
@@ -67,7 +48,7 @@ class LoginForm extends Component {
                     <TextInput
                         placeholder="E-mail"
                         style={inputStyle}
-                        value={this.state.email}
+                        value={this.props.email} //state.email idi, props.email yaptık, mapStateToProps methodundakilere erişmek için
                         onChangeText={email => this.props.emailChanged(email)} //kimlikdogrulamaactionsa yollayıp actionu tetikliyoruz.
                     // email => this.setState({ email }),emaili, setState'nin içindeki emaile eşitle anlamına geliyor. Bu eski yazılan
                     />
@@ -77,7 +58,7 @@ class LoginForm extends Component {
                         secureTextEntry //password şeklinde noktalı olarak gösterir
                         placeholder="Şifre"
                         style={inputStyle}
-                        value={this.state.password}
+                        value={this.props.password}
                         onChangeText={password => this.props.passwordChanged(password)} //kimlikdogrulamaactionsa yollayıp actionu tetikliyoruz.
                     //password => this.setState({ password }),passwordu, setState'nin içindeki passworde eşitle anlamına geliyor. Bu eski yazılan
                     />
@@ -99,6 +80,20 @@ const styles = {
         flex: 1
     }
 };
-export default connect(null, { emailChanged, passwordChanged })(LoginForm); //Login yapısı connect yapısı
+
+const mapStateToProps = ({ kimlikdogrulamaResponse }) => {
+    const { email, password, loading } = kimlikdogrulamaResponse; //const sabiti ile oluşturduğumuz email ve passwordu kimlikdogrulamaResponse'den alıcak ve burdaki email ve passworda return edicek.
+    return {
+        email,
+        password,
+        loading,
+    };
+};
+
+export default connect(mapStateToProps, { emailChanged, passwordChanged, LoginUser })(LoginForm); //Login yapısı connect yapısı
 //connect içerisindeki ilk değer, reducesten dönücek olan değerlerin bu component içerisinde düşücek olan methodun adını veriyoruz
 //süslü ile yazılan ikinci değer ise hangi metodun içerisine çıkacaksan onları yazıyorsun.
+
+//İlerleyen derslerde aslında dispatch yapısının tam olarak ne işe yaradığından örnekler ile bahsediyorum. Küçük bir özet geçersek.
+//Diyelim ki bir login işlemi yaptırmak istiyorsunuz. Butonunuza bastığınız anda action methodunuz içerisinden payload(data) değeri boş ama bir type'ı olan dispatch eklediğinizde bu dispatch yapıyı tetikleyerek bulunduğunuz class'a props değerlerini dönebiliyor. Örneğin tıkladığınız anda daha servis'iniz ile konuşmadan tetiklediğiniz dispatch değerinizle bir loading props değeri dönerek bu değeride true dönerseniz uygulamanızda bir spiner göstererek gerekli işlemler yapılıp kullanıcıyı login etmek istediğinizde bir dispatch yapısı ile gerekli datalarınızı dönerken bu loading değerinide false dönerek spiner'ı kaldırabilirsiniz. 
+//Yukarıda çok basit bir örnek verdim. Genel anlamda dispatch yapısını çalıştırdığınız anda o class'ınızı yeniden set edebiliyor istediğiniz anda istediğiniz değişiklikleri kullanıcıya sunabiliyorsunuz. 
