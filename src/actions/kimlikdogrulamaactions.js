@@ -1,5 +1,8 @@
 import { Alert } from 'react-native';
-import firebase from '@firebase/app';
+import { Actions } from 'react-native-router-flux';
+//import firebase from '@firebase/app';
+import Firebase from '../../firebase';
+import '@firebase/auth';
 import {
     EMAIL_CHANGED,
     PASSWORD_CHANGED,
@@ -26,7 +29,7 @@ export const passwordChanged = (password) => {
     };
 };
 
-export const LoginUser = ({ email, password }) => {
+export const loginUser = ({ email, password }) => {
     return (dispatch) => {
         dispatch({ type: LOGIN_USER });
         if (email === '' || password === '') { //boş ise hata verdirtiyoruz.
@@ -39,32 +42,34 @@ export const LoginUser = ({ email, password }) => {
             );
         }
         else {
-            firebase.auth().signInWithEmailAndPassword(email, password)
+            Firebase.auth().signInWithEmailAndPassword(email, password)
                 .then(user => loginSuccess(dispatch, user)) //then'den sonrası giriş başarılı demek gibi birşey.
                 .catch(() => {
-                    firebase.auth().createUserWithEmailAndPassword(email, password) //eğer giriş yapan kullanıcı kayıtlı değil ise kaydetmesi için.
+                    Firebase.auth().createUserWithEmailAndPassword(email, password) //eğer giriş yapan kullanıcı kayıtlı değil ise kaydetmesi için.
                         .then(user => loginSuccess(dispatch, user))
-                        .catch(() => loginFail());//eğer bu kullanıcı zaten var ise hataya düşürmek için
+                        .catch(() => loginFail(dispatch));//eğer bu kullanıcı zaten var ise hataya düşürmek için
                 });
         }
     };
 };
-//dispatch göndericez çünkü reducesu hareket ettiricez.
+//dispatch göndericez çünkü reducesu hareket ettiricez ve loading false olup, spinner kaybolacak
 const loginSuccess = (dispatch, user) => {
     dispatch({
         type: LOGIN_USER_SUCCESS,
         payload: user
     });
+    Actions.main(); //Actions sayesinde giriş başarılı ise bu sayfaya yönlendir diyoruz.
 };
+//login fail user almıyor çünkü yok bir kullanıcı, bu yüzden hata verdirtiyoruz.
 const loginFail = (dispatch) => {
     Alert.alert(
         'Mesaj',
-        'Boş Alan Bırakılamaz!',
+        'Kullanıcı adı veya şifreniz hatalı!!!!',
         [
             { text: 'Tamam', onPress: () => null }
         ]
     );
     dispatch({
-        type: LOGIN_USER_FAIL
+        type: LOGIN_USER_FAIL //login fail olduğu için payload göndermemize gerek kalmıyor.
     });
 };

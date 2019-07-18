@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
 //state yapısında email ve passwordleri tutucağımız için class base component
 //oluşturmamız gerekiyor
-
-import firebase from '@firebase/app';
-import '@firebase/auth';
 import { connect } from 'react-redux'; //import ettiğimiz actionsları kullanabilmemiz için gerekli
-import { TextInput, Alert } from 'react-native';
+import { TextInput, Alert, View } from 'react-native';
 import { Button, Card, CardSection, Spinner } from '../components'; //components klasörü altındaki index.js sayesinde bu tarzda çağırabildik.
-import { emailChanged, passwordChanged, LoginUser } from '../actions/kimlikdogrulamaactions'; //import ediyoruz ancak kullanabilmek için connect yapısı gerekli
+import { emailChanged, passwordChanged, loginUser } from '../actions/kimlikdogrulamaactions'; //import ediyoruz ancak kullanabilmek için connect yapısı gerekli
 class LoginForm extends Component {
     state = { email: '', password: '', loading: false };
     clickLogin() {
         const { email, password } = this.props; //bu propslar mapStateToProps'den geliyor
-        this.props.LoginUser({ email, password });
+        this.props.loginUser({ email, password });
         /*this.setState({ loading: true });
         const { email, password } = this.state; this.state'nin içindeki email ve passworda ulaşmak için*/
     }
@@ -43,30 +40,32 @@ class LoginForm extends Component {
     render() {
         const { inputStyle } = styles;
         return (
-            <Card>
-                <CardSection>
-                    <TextInput
-                        placeholder="E-mail"
-                        style={inputStyle}
-                        value={this.props.email} //state.email idi, props.email yaptık, mapStateToProps methodundakilere erişmek için
-                        onChangeText={email => this.props.emailChanged(email)} //kimlikdogrulamaactionsa yollayıp actionu tetikliyoruz.
-                    // email => this.setState({ email }),emaili, setState'nin içindeki emaile eşitle anlamına geliyor. Bu eski yazılan
-                    />
-                </CardSection>
-                <CardSection>
-                    <TextInput
-                        secureTextEntry //password şeklinde noktalı olarak gösterir
-                        placeholder="Şifre"
-                        style={inputStyle}
-                        value={this.props.password}
-                        onChangeText={password => this.props.passwordChanged(password)} //kimlikdogrulamaactionsa yollayıp actionu tetikliyoruz.
-                    //password => this.setState({ password }),passwordu, setState'nin içindeki passworde eşitle anlamına geliyor. Bu eski yazılan
-                    />
-                </CardSection>
-                <CardSection>
-                    {this.renderButton()}
-                </CardSection>
-            </Card>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+                <Card>
+                    <CardSection>
+                        <TextInput
+                            placeholder="E-mail"
+                            style={inputStyle}
+                            value={this.props.email} //state.email idi, props.email yaptık, mapStateToProps methodundakilere erişmek için
+                            onChangeText={email => this.props.emailChanged(email)} //kimlikdogrulamaactionsa yollayıp actionu tetikliyoruz.
+                        // email => this.setState({ email }),emaili, setState'nin içindeki emaile eşitle anlamına geliyor. Bu eski yazılan
+                        />
+                    </CardSection>
+                    <CardSection>
+                        <TextInput
+                            secureTextEntry //password şeklinde noktalı olarak gösterir
+                            placeholder="Şifre"
+                            style={inputStyle}
+                            value={this.props.password}
+                            onChangeText={password => this.props.passwordChanged(password)} //kimlikdogrulamaactionsa yollayıp actionu tetikliyoruz.
+                        //password => this.setState({ password }),passwordu, setState'nin içindeki passworde eşitle anlamına geliyor. Bu eski yazılan
+                        />
+                    </CardSection>
+                    <CardSection>
+                        {this.renderButton()}
+                    </CardSection>
+                </Card>
+            </View>
         );
     }
 }
@@ -90,7 +89,7 @@ const mapStateToProps = ({ kimlikdogrulamaResponse }) => {
     };
 };
 
-export default connect(mapStateToProps, { emailChanged, passwordChanged, LoginUser })(LoginForm); //Login yapısı connect yapısı
+export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUser })(LoginForm); //Login yapısı connect yapısı
 //connect içerisindeki ilk değer, reducesten dönücek olan değerlerin bu component içerisinde düşücek olan methodun adını veriyoruz
 //süslü ile yazılan ikinci değer ise hangi metodun içerisine çıkacaksan onları yazıyorsun.
 
