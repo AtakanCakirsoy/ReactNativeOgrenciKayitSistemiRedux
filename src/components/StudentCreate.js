@@ -79,7 +79,7 @@ const styles = {
     }
 };
 
-const mapToStateProps = ({ studentsListResponse }) => {
+const mapStateToProps = ({ studentsListResponse }) => {
     const { isim,
         soyisim,
         ogrencinumara,
@@ -94,6 +94,6 @@ const mapToStateProps = ({ studentsListResponse }) => {
     };
 };
 
-export default connect(mapToStateProps, { studentChange, studentCreate })(StudentCreate);
+export default connect(mapStateToProps, { studentChange, studentCreate })(StudentCreate);
  /* onValueChange={sube => this.props.studentChange(sube)}, Picker datasını değiştirdiğimiz zaman. */
 

@@ -7,8 +7,7 @@ const INITAL_STATE = {
 export default (state = INITAL_STATE, action) => {
     switch (action.type) {
         case STUDENT_LIST_DATA_SUCCESS:
-            console.log(action);
-            return state;
+            return action.payload;  //action.payload ad,soyad,numara,şube verilerini tutuyor.
             default:
             return state;
     }
