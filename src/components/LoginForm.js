@@ -83,8 +83,8 @@ const styles = {
 const mapStateToProps = ({ kimlikdogrulamaResponse }) => {
     const { email, password, loading } = kimlikdogrulamaResponse; //const sabiti ile oluşturduğumuz email ve passwordu kimlikdogrulamaResponse'den alıcak ve burdaki email ve passworda return edicek.
     return {
-        email,
-        password,
+        email: 'cakirsoy@gmail.com', //her seferinde yazmak yerine sabit olarak atadık.
+        password: '123456', //her seferinde yazmak yerine sabit olarak atadık.
         loading,
     };
 };
@@ -95,4 +95,6 @@ export default connect(mapStateToProps, { emailChanged, passwordChanged, loginUs
 
 //İlerleyen derslerde aslında dispatch yapısının tam olarak ne işe yaradığından örnekler ile bahsediyorum. Küçük bir özet geçersek.
 //Diyelim ki bir login işlemi yaptırmak istiyorsunuz. Butonunuza bastığınız anda action methodunuz içerisinden payload(data) değeri boş ama bir type'ı olan dispatch eklediğinizde bu dispatch yapıyı tetikleyerek bulunduğunuz class'a props değerlerini dönebiliyor. Örneğin tıkladığınız anda daha servis'iniz ile konuşmadan tetiklediğiniz dispatch değerinizle bir loading props değeri dönerek bu değeride true dönerseniz uygulamanızda bir spiner göstererek gerekli işlemler yapılıp kullanıcıyı login etmek istediğinizde bir dispatch yapısı ile gerekli datalarınızı dönerken bu loading değerinide false dönerek spiner'ı kaldırabilirsiniz. 
-//Yukarıda çok basit bir örnek verdim. Genel anlamda dispatch yapısını çalıştırdığınız anda o class'ınızı yeniden set edebiliyor istediğiniz anda istediğiniz değişiklikleri kullanıcıya sunabiliyorsunuz. 
+//Yukarıda çok basit bir örnek verdim. Genel anlamda dispatch yapısını çalıştırdığınız anda o class'ınızı yeniden set edebiliyor istediğiniz anda istediğiniz değişiklikleri kullanıcıya sunabiliyorsunuz.
+
+//mapStateProps yazdığınız yere obje yazmanız normalde aynı, hemen yanındaki actions methodları gibi. Dolayısıyla o fonksiyon obje dönmeli. objeleride süslü parantez ile belirtiyoruz.

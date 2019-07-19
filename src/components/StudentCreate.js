@@ -1,23 +1,35 @@
 import React, { Component } from 'react';
 import { View, Text, TextInput, Picker } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, CardSection } from '../components'; //components klasörü altındaki index.js sayesinde bu tarzda çağırabildik.
-import { studentChange } from '../actions';
+import { Button, CardSection, Card, Spinner } from '../components'; //components klasörü altındaki index.js sayesinde bu tarzda çağırabildik.
+import { studentChange, studentCreate } from '../actions';
 
 class StudentCreate extends Component {
     clickSave() {
-
+        const { isim,
+            soyisim,
+            ogrencinumara,
+            sube } = this.props; //this.propstan burdaki dataları çekiyoruz
+        this.props.studentCreate({ isim, soyisim, ogrencinumara, sube });
+    }
+    renderButton() {
+        if (!this.props.loading) {
+            <Button onPress={this.clickSave.bind(this)}>Kaydet</Button>
+        }
+        return <Spinner size="small" />
+        //renderButon çalıştığında, clickSaveye basılmış olucak ve  reduces tetiklenecek ve loading aşağıda mapToStateProps'tan değer alıp return edicek.
+        //O returne göre true ise spinner gözükece, false ise buton gözükecek
     }
     render() {
         const { inputStyle } = styles;
         return (
-            <View>
+            <Card>
                 <CardSection>
                     <TextInput
                         placeholder="İsim"
                         style={inputStyle}
                         value={this.props.isim}
-                        nChangeText={isim => this.props.studentChange({ props: 'isim', value: isim })} //studentlistactions'a gidicek. Tek bir input gitmeyeceği için yani
+                        onChangeText={isim => this.props.studentChange({ props: 'isim', value: isim })} //studentlistactions'a gidicek. Tek bir input gitmeyeceği için yani
                     //isim, soyisim, öğrenci numarası ve şube bilgileri gideceği için props olarak tanımladık ve onlara value verdik.
                     />
                 </CardSection>
@@ -52,7 +64,7 @@ class StudentCreate extends Component {
                 <CardSection>
                     <Button onPress={this.clickSave.bind(this)}>Kaydet</Button>
                 </CardSection>
-            </View>
+            </Card>
         );
     }
 }
@@ -71,14 +83,17 @@ const mapToStateProps = ({ studentsListResponse }) => {
     const { isim,
         soyisim,
         ogrencinumara,
-        sube } = studentsListResponse;
+        sube,
+        loading } = studentsListResponse;
     return {
         isim,
         soyisim,
         ogrencinumara,
-        sube //burdan dönen şube mesela yukardaki this.props.sube değerimiz oluyor.
+        sube, //burdan dönen şube mesela yukardaki this.props.sube değerimiz oluyor.
+        loading
     };
 };
 
-export default connect(mapToStateProps, { studentChange })(StudentCreate);
+export default connect(mapToStateProps, { studentChange, studentCreate })(StudentCreate);
  /* onValueChange={sube => this.props.studentChange(sube)}, Picker datasını değiştirdiğimiz zaman. */
+

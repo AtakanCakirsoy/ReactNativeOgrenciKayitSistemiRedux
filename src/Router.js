@@ -11,7 +11,7 @@ const RouterComponent = () => {
                 <Scene key="loginScreen" component={LoginForm} title="Giriş Ekranı" />
             </Scene>
 
-            <Scene key="main" initial>
+            <Scene key="main">
                 <Scene
                     onRight={() => Actions.studentCreate()} //Actions metodu ile o sayfa git diyoruz
                     rightTitle="Yeni"

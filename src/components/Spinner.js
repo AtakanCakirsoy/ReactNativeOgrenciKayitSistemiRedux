@@ -4,7 +4,7 @@ import { View, ActivityIndicator } from 'react-native';
 const Spinner = ({ size /*özellik olarak size alabilmesi için bu şekilde belirttik. */ }) => {
     return (
         <View style={styles.spinnerStyle}>
-            <ActivityIndicator size={size || 'large'} /> {/* soldaki ifade, size değer alsın yada almıyorsa large olsun demek. */}
+            <ActivityIndicator size={size || 'large'} />
         </View>
     );
 };
@@ -18,3 +18,4 @@ const styles = {
 };
 
 export { Spinner }; //default yazısını kaldırıp süslü içine aldık çünkü index.js'de hepsini ortak çağırırken export edebilmek için.
+// <ActivityIndicator size={size || 'large'} />  soldaki ifade, size değer alsın yada almıyorsa large olsun demek.
